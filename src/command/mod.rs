@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
+use clap::Subcommand;
 use eyre::{Result, WrapErr};
-use structopt::StructOpt;
 
 use atuin_client::database::Sqlite;
 use atuin_client::settings::Settings as ClientSettings;
@@ -20,77 +20,89 @@ mod server;
 mod stats;
 mod sync;
 
-#[derive(StructOpt)]
+#[derive(Subcommand)]
 pub enum AtuinCmd {
-    #[structopt(
-        about="manipulate shell history",
-        aliases=&["h", "hi", "his", "hist", "histo", "histor"],
-    )]
+    /// manipulate shell history
+    #[clap(subcommand)]
     History(history::Cmd),
 
-    #[structopt(about = "import shell history from file")]
+    /// import shell history from file
+    #[clap(subcommand)]
     Import(import::Cmd),
 
-    #[structopt(about = "start an atuin server")]
+    /// start an atuin server
+    #[clap(subcommand)]
     Server(server::Cmd),
 
-    #[structopt(about = "calculate statistics for your history")]
+    /// calculate statistics for your history
+    #[clap(subcommand)]
     Stats(stats::Cmd),
 
-    #[structopt(about = "output shell setup")]
+    /// output shell setup
+    #[clap(subcommand)]
     Init(init::Cmd),
 
-    #[structopt(about = "generates a UUID")]
+    /// generates a UUID
     Uuid,
 
-    #[structopt(about = "interactive history search")]
+    /// interactive history search
     Search {
-        #[structopt(long, short, about = "filter search result by directory")]
+        ///filter search result by directory
+        #[clap(long, short)]
         cwd: Option<String>,
 
-        #[structopt(long = "exclude-cwd", about = "exclude directory from results")]
+        ///exclude directory from results
+        #[clap(long = "exclude-cwd")]
         exclude_cwd: Option<String>,
 
-        #[structopt(long, short, about = "filter search result by exit code")]
+        ///filter search result by exit code
+        #[clap(long, short)]
         exit: Option<i64>,
 
-        #[structopt(long = "exclude-exit", about = "exclude results with this exit code")]
+        ///exclude results with this exit code
+        #[clap(long = "exclude-exit")]
         exclude_exit: Option<i64>,
 
-        #[structopt(long, short, about = "only include results added before this date")]
+        ///only include results added before this date
+        #[clap(long, short)]
         before: Option<String>,
 
-        #[structopt(long, about = "only include results after this date")]
+        ///only include results after this date
+        #[clap(long)]
         after: Option<String>,
 
-        #[structopt(long, short, about = "open interactive search UI")]
+        ///open interactive search UI
+        #[clap(long, short)]
         interactive: bool,
 
-        #[structopt(long, short, about = "use human-readable formatting for time")]
+        ///use human-readable formatting for time
+        #[clap(long, short)]
         human: bool,
 
         query: Vec<String>,
 
-        #[structopt(long, about = "Show only the text of the command")]
+        ///Show only the text of the command
+        #[clap(long)]
         cmd_only: bool,
     },
 
-    #[structopt(about = "sync with the configured server")]
+    /// sync with the configured server
     Sync {
-        #[structopt(long, short, about = "force re-download everything")]
+        ///force re-download everything
+        #[clap(long, short)]
         force: bool,
     },
 
-    #[structopt(about = "login to the configured server")]
+    /// login to the configured server
     Login(login::Cmd),
 
-    #[structopt(about = "log out")]
+    /// log out
     Logout,
 
-    #[structopt(about = "register with the configured server")]
+    /// register with the configured server
     Register(register::Cmd),
 
-    #[structopt(about = "print the encryption key for transfer to another machine")]
+    /// print the encryption key for transfer to another machine
     Key,
 }
 
